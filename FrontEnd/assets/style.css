@@ -15,7 +15,7 @@ table, caption, tbody, tfoot, thead, tr, th, td,
 article, aside, canvas, details, embed,
 figure, figcaption, footer, header, hgroup,
 menu, nav, output, ruby, section, summary,
-time, mark, audio, video {
+time, mark, audio, video, button {
 	margin: 0;
 	padding: 0;
 	border: 0;
@@ -125,6 +125,41 @@ li:hover {
 	text-align: center;
 	margin-bottom: 1em;
 }
+
+.filters{
+	display: flex;
+	justify-content: center;
+	margin: 3em;
+}
+
+.filters .btn {
+	font-family: 'Syne';
+	font-weight: 700;
+	font-size: 16px;
+	padding: 0.6em 1.2em;
+	color: #1D6154;
+	background-color: white;
+	border: 1px solid #1D6154;
+	border-radius: 60px;
+	cursor: pointer;
+	text-align: center;
+	margin: 0 0.4em;
+}
+
+.btn-active {
+	font-family: 'Syne';
+	font-weight: 700;
+	font-size: 16px;
+	padding: 0.6em 1.2em;
+	color: white;
+	background-color: #1D6154;
+	border: 1px solid #1D6154;
+	border-radius: 60px;
+	cursor: pointer;
+	text-align: center;
+	margin: 0 0.4em;
+}
+
 .gallery {
 	width: 100%;
 	display: grid;
