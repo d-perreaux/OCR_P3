@@ -146,18 +146,9 @@ li:hover {
 	margin: 0 0.4em;
 }
 
-.btn-active {
-	font-family: 'Syne';
-	font-weight: 700;
-	font-size: 16px;
-	padding: 0.6em 1.2em;
+.filters .btn.active {
 	color: white;
 	background-color: #1D6154;
-	border: 1px solid #1D6154;
-	border-radius: 60px;
-	cursor: pointer;
-	text-align: center;
-	margin: 0 0.4em;
 }
 
 .gallery {

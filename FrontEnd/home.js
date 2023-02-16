@@ -9,6 +9,7 @@ import { Work } from "./JS/works.js";
 const jsonListWorks = await fetch("http://localhost:5678/api/works")
     .then(jsonListWorks => jsonListWorks.json());
 
+
 //    ---- Function : create instances of class Work to Display them on the Browser ----
 function generateWorks(jsonList) {
     document.querySelector(".gallery").innerHTML = "";
@@ -28,15 +29,15 @@ function addListernerFilters(jsonListWorks) {
 
     for (let i = 0; i < filterButtonList.length; i++) {
         filterButtonList[i].addEventListener("click", function (event) {
-            filterButtonList.forEach((button) => button.classList.replace("btn-active", "btn"));
-            event.target.classList.replace("btn", "btn-active");
+            filterButtonList.forEach((button) => button.classList.remove("active"));
+            event.target.classList.add("active");
             const filteredJsonListWorks = jsonListWorks.filter(function (jsonListWorks) {
                 //    ---- Case first load of the page OR All Filter Selected ----
                 //    ---- Filter don't modify the List ----
                 if (event.target.id == 0) {
                     return true;
                 } else {
-                //    ---- List is filtered according to the category ----
+                    //    ---- List is filtered according to the category ----
                     return jsonListWorks.categoryId == event.target.id;
                 }
             });
@@ -50,4 +51,5 @@ generateWorks(jsonListWorks);
 
 //    ---- Display of .gallery according to the filter selected ----
 addListernerFilters(jsonListWorks);
+
 

@@ -5,7 +5,5 @@ const jsonFilters = await fetch("http://localhost:5678/api/categories")
 //    ---- Create and Display Filters Categories ----
 for (let filter of jsonFilters) {
     document.querySelector(".filters").innerHTML +=
-    `<button class="btn" type="button" id="${filter.id}">${filter.name}</button>`
+        `<button class="btn" type="button" id="${filter.id}">${filter.name}</button>`
 };
-
-
