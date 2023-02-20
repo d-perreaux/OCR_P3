@@ -5,6 +5,8 @@
 //    ---- Import Class Work ----
 import { Work } from "./JS/works.js";
 
+import { Auth } from "./JS/auth.js";
+
 //    ---- Create JSON Datas from API ----
 const ListWorks = await fetch("http://localhost:5678/api/works")
     .then(ListWorks => ListWorks.json());
@@ -62,8 +64,12 @@ addListernerFilters(ListWorks);
 
 //    ---- Store the userId when Login complete ----
 let userId = window.sessionStorage.getItem("userId");
+let jwt = window.sessionStorage.getItem("token");
 
-//    ---- 
-if (userId != "" && userId != null) { console.log(userId) };
-
-
+if (userId != "" && userId != null) { 
+    Auth.addAuthCss();
+    Auth.generateAuthDisplay();
+    Auth.getLogout();
+    Auth.homeDisplayTopHeader();
+    Auth.homeDisplayDivModify();
+ };

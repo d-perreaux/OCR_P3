@@ -62,7 +62,6 @@ class Login {
                                 window.sessionStorage.setItem("token", storageToken);
                                 window.sessionStorage.setItem("userId", storageUserId);
                                 window.location.href = "./index.html";
-                                
                             })
                         } else {
                             window.location.href = "./login.html";
