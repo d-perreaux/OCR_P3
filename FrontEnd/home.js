@@ -6,50 +6,64 @@
 import { Work } from "./JS/works.js";
 
 //    ---- Create JSON Datas from API ----
-const jsonListWorks = await fetch("http://localhost:5678/api/works")
-    .then(jsonListWorks => jsonListWorks.json());
+const ListWorks = await fetch("http://localhost:5678/api/works")
+    .then(ListWorks => ListWorks.json());
 
 
-//    ---- Function : create instances of class Work to Display them on the Browser ----
-function generateWorks(jsonList) {
+//    ---- Function() : create instances of class Work to Display them on the Browser ----
+function generateWorks(List) {
     document.querySelector(".gallery").innerHTML = "";
-    for (let jsonWork of jsonList) {
-        let work = new Work(jsonWork);
+    for (let work of List) {
+        let workClass = new Work(work);
         document.querySelector(".gallery").innerHTML += `
     <figure>
-        <image src="${work.imageUrl}" alt="${work.title}"></image>
-        <figcaption>${work.title}</figcaption>
+        <image src="${workClass.imageUrl}" alt="${workClass.title}"></image>
+        <figcaption>${workClass.title}</figcaption>
     </figure>`
     };
 }
 
-//    ---- Function : Filters LISTENERS ----
-function addListernerFilters(jsonListWorks) {
+
+//    ---- Function() : Filters LISTENERS ----
+function addListernerFilters(ListWorks) {
     const filterButtonList = document.querySelectorAll(".filters .btn");
 
     for (let i = 0; i < filterButtonList.length; i++) {
         filterButtonList[i].addEventListener("click", function (event) {
+            //    ---- Select which filter button is active ----
             filterButtonList.forEach((button) => button.classList.remove("active"));
             event.target.classList.add("active");
-            const filteredJsonListWorks = jsonListWorks.filter(function (jsonListWorks) {
+            const filteredListWorks = ListWorks.filter(function (ListWorks) {
                 //    ---- Case first load of the page OR All Filter Selected ----
-                //    ---- Filter don't modify the List ----
-                if (event.target.id == 0) {
+                if (event.target.id === "") {
+                    console.log(event.target.id);
+                    //    ---- Filter don't modify the List ----
                     return true;
                 } else {
                     //    ---- List is filtered according to the category ----
-                    return jsonListWorks.categoryId == event.target.id;
+                    return ListWorks.categoryId == event.target.id;
                 }
             });
-            generateWorks(filteredJsonListWorks);
+
+            //    ---- Class the function which create instances of Work
+            //         to display them ----
+            generateWorks(filteredListWorks);
         })
     };
 }
 
 //    ---- Initial Display of .gallery: complete WorksList ----
-generateWorks(jsonListWorks);
+generateWorks(ListWorks);
 
+//    ---- Change the Display of the selected filter button ----
 //    ---- Display of .gallery according to the filter selected ----
-addListernerFilters(jsonListWorks);
+addListernerFilters(ListWorks);
+
+
+//    ---- Store the userId when Login complete ----
+let userId = window.sessionStorage.getItem("userId");
+
+//    ---- 
+if (userId != "" && userId != null) { console.log(userId) };
 
 

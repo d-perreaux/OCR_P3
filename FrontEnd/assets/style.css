@@ -235,10 +235,16 @@ input[type="submit"]{
 	width: 180px;
 	text-align: center;
 	border-radius: 60px ;
+	cursor: pointer;
 }
 
 #login a {
 	color: #1D6154;
+}
+
+#login #message {
+	text-align: center;
+	color: red;
 }
 
 footer {
