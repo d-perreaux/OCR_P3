@@ -109,6 +109,7 @@ nav li {
 }
 
 nav li a {
+	color: black;
 	text-decoration: none;
 }
 
@@ -123,6 +124,16 @@ nav li a:visited {
 nav li a:hover {
 	color: #B1663C;
 }
+
+#login a {
+	color: #1D6154;
+}
+
+#login #message {
+	text-align: center;
+	color: red;
+}
+
 #introduction {
 	display: flex;
 	align-items: center;
@@ -188,6 +199,11 @@ nav li a:hover {
 	width: 100%;
 
 }
+
+.modal {
+	display: none;
+}
+
 #contact {
 	width: 50%;
 margin: auto;
@@ -236,15 +252,6 @@ input[type="submit"]{
 	text-align: center;
 	border-radius: 60px ;
 	cursor: pointer;
-}
-
-#login a {
-	color: #1D6154;
-}
-
-#login #message {
-	text-align: center;
-	color: red;
 }
 
 footer {

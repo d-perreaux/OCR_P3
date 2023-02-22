@@ -1,5 +1,5 @@
 export class Auth {
-    //    ---- Add auth.css
+    //    ---- Add auth.css to <head>
     static addAuthCss() {
         const linkCss = document.createElement("link")
         linkCss.setAttribute("rel", "stylesheet");
@@ -14,7 +14,7 @@ export class Auth {
     }
 
     //    ---- last link of nav : preventDefault() ----
-    //    ---- last link of nav : addEventListener ----
+    //    ---- last link of nav : addEventListener() ----
     //    ---- clear sessionStorage ----
     static getLogout() {
         const logout = document.getElementById("log");
@@ -46,10 +46,16 @@ export class Auth {
             <div><i class="fa-regular fa-pen-to-square fa-lg"></i></div>
             <div type="button">modifier</div>
         </div>
-        `; 
+        `;
         document.querySelector("#introduction").insertAdjacentHTML('afterend', wrapperModifyElements);
+       
+        // add an id to the modal gallery button
+        wrapperModifyElements = `
+        <div class="wrapper-auth-modify">
+            <div><i class="fa-regular fa-pen-to-square fa-lg"></i></div>
+            <div type="button" id="gallery-modal-button">modifier</div>
+        </div>
+        `;
         document.querySelector("#portfolio div h2").insertAdjacentHTML('afterend', wrapperModifyElements);
-        
-    
-}
+    }
 }

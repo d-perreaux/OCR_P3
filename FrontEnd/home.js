@@ -7,6 +7,8 @@ import { Work } from "./JS/works.js";
 
 import { Auth } from "./JS/auth.js";
 
+import * as Modal from "./JS/modal.js";
+
 //    ---- Create JSON Datas from API ----
 const ListWorks = await fetch("http://localhost:5678/api/works")
     .then(ListWorks => ListWorks.json());
@@ -38,7 +40,6 @@ function addListernerFilters(ListWorks) {
             const filteredListWorks = ListWorks.filter(function (ListWorks) {
                 //    ---- Case first load of the page OR All Filter Selected ----
                 if (event.target.id === "") {
-                    console.log(event.target.id);
                     //    ---- Filter don't modify the List ----
                     return true;
                 } else {
@@ -72,4 +73,5 @@ if (userId != "" && userId != null) {
     Auth.getLogout();
     Auth.homeDisplayTopHeader();
     Auth.homeDisplayDivModify();
+    Modal.openModal("#gallery-modal-button", ListWorks);
  };
