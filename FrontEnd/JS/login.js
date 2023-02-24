@@ -47,7 +47,7 @@ class Login {
             // After the loop (so if all the inputs are correct) :
             //    ---- postAPI(): Calls login API ----
             try {
-                const response = fetch("http://localhost:5678/api/users/login",
+                fetch("http://localhost:5678/api/users/login",
                     this.postAPI())
                     .then(response => {
                         // Check the response.status
@@ -56,9 +56,9 @@ class Login {
                             elementMessage.innerText = "Email et/ou Mot de passe non reconnus";
                         } else if (response.status == 200) {
                             // If response OK : save the Token and the Id in the Session Storage
-                            response = response.json().then(response => {
-                                const storageToken = JSON.stringify(response.token);
-                                const storageUserId = JSON.stringify(response.userId);
+                            response.json().then(response => {
+                                const storageToken = response.token;
+                                const storageUserId = response.userId;
                                 window.sessionStorage.setItem("token", storageToken);
                                 window.sessionStorage.setItem("userId", storageUserId);
                                 window.location.href = "./index.html";
@@ -75,7 +75,6 @@ class Login {
     }
 }
 
-
 //    ---- Create INSTANCE of Login ----
 //    ---- Automatically 
 //          - create the eventListener
@@ -84,9 +83,5 @@ class Login {
 //          - store Auth Token and Id in Local Storage
 
 const formSubmit = document.querySelector("#login-submit");
-
-if (formSubmit) {
-    const fields = ["email", "password"];
-    const validator = new Login(formSubmit, fields)
-};
-
+const fields = ["email", "password"];
+new Login(formSubmit, fields);
