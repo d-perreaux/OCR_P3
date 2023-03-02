@@ -11,7 +11,7 @@ export function generateWorks(List) {
         let workClass = new Work(work);
         document.querySelector(".gallery").innerHTML += `
     <figure>
-        <image src="${workClass.imageUrl}" alt="${workClass.title}"></image>
+        <image src="${workClass.imageUrl}" alt="${workClass.title}"  id="work-${workClass.id}"></image>
         <figcaption>${workClass.title}</figcaption>
     </figure>`
     };

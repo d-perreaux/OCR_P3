@@ -221,14 +221,14 @@ margin: auto;
 #contact h2, #login h2{
 	margin-bottom: 20px;
 }
-#contact form, #login form, .wrapper-modal-content form {
+#contact form, #login form, .wrapper-modal-addwork-content form {
 	text-align: left;
 	margin-top:30px;
 	display: flex;
 	flex-direction: column;
 }
 
-#contact input, #login input, .wrapper-modal-content input {
+#contact input, #login input, .wrapper-modal-content input, .wrapper-modal-addwork-content input,.wrapper-modal-addwork-content select {
 	height: 50px;
 	font-size: 1.2em;
 	border: none;
