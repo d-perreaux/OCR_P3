@@ -75,12 +75,6 @@ class Login {
     }
 }
 
-//    ---- Create INSTANCE of Login ----
-//    ---- Automatically 
-//          - create the eventListener
-//          - call the reportValidity()
-//          - collect datas for login API call
-//          - store Auth Token and Id in Local Storage
 
 const formSubmit = document.querySelector("#login-submit");
 const fields = ["email", "password"];

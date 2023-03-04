@@ -1,7 +1,7 @@
 /* 
     ---- Handle Display of the Welcome Page ----
 */
-import { addListernerFilters, generateWorks } from "./JS/works.js";
+import { addListenerFilters, generateWorks } from "./JS/works.js";
 import { Auth } from "./JS/auth.js";
 import { Work } from "./JS/works.js";
 
@@ -52,9 +52,12 @@ async function deleteWorksAPI(id) {
                 const elementToDeleteGallery = document.getElementById(`work-${id}`);
                 const gallery = elementToDeleteGallery.parentNode;
                 gallery.remove();
+
                 const elementToDeleteModal = document.getElementById(`work-number-${id}`);
                 const parentElementToDeleteModal = elementToDeleteModal.closest(".div-wrapper");
                 parentElementToDeleteModal.remove();
+
+                listWorks = listWorks.filter(work => work.id !== id)
             }
         })
 }
@@ -72,6 +75,21 @@ function createReqDeleteAPI() {
     return configurationObject;
 }
 
+function deleteModal() {
+    document.querySelector(".modal-title h3").innerHTML = "";
+    const wrapperModalMenuContent = document.querySelector(".modal-content");
+    while (wrapperModalMenuContent.firstChild) {
+        wrapperModalMenuContent.removeChild(wrapperModalMenuContent.firstChild);
+    }
+    document.querySelector(".modal-footer").innerHTML = "";
+    //remove the closeListeners
+    // document.querySelector("#gallery-modal-button").removeEventListener("click", closeModal("#gallery-modal-button"));
+    document.querySelector(".wrapper-modal").removeEventListener("click", function (e) {
+        e.stopPropagation();
+    });
+    document.querySelector(".modal").removeEventListener("click", closeModal(".close-modal"));
+}
+
 
 //    ---- Add EventListener which close Modal ----
 function closeModal(element) {
@@ -81,20 +99,7 @@ function closeModal(element) {
         //close the modal
         target.style.display = "none";
         //delete the modal content
-
-        document.querySelector(".modal-title h3").innerHTML = "";
-        const wrapperModalMenuContent = document.querySelector(".modal-content");
-        while (wrapperModalMenuContent.firstChild) {
-            wrapperModalMenuContent.removeChild(wrapperModalMenuContent.firstChild);
-        }
-        document.querySelector(".modal-footer").innerHTML = "";
-        //remove the closeListeners
-        modalButton.removeEventListener("click", closeModal(element));
-        document.querySelector(".wrapper-modal").removeEventListener("click", function (e) {
-            e.stopPropagation();
-        });
-        target.removeEventListener("click", closeModal(".close-modal"));
-
+        deleteModal();
     })
 }
 
@@ -105,7 +110,7 @@ function generateDisplayModalMenuTitle(title) {
 }
 
 
-function generateDisplayModalMenuContent(list) {
+function generateDisplayModalMenuContent() {
     const modalContent = document.querySelector(".modal-content");
 
     //add the wrapper with grid property
@@ -117,7 +122,7 @@ function generateDisplayModalMenuContent(list) {
     //generate the content of <.wrapper-modal-content>: 
     // - picture of the works
     // - icons on each picture
-    for (let item of list) {
+    for (let item of listWorks) {
         const divWrapper = document.createElement("div");
         const divImgWrapper = document.createElement("div");
         const img = document.createElement("img");
@@ -247,32 +252,37 @@ async function openModalAddWork() {
             // for (let input of inputsList) {
 
             // }
-            // Creat instance of Work to add it through API call
+            // Create instance of Work to add it through API call
             const fields = ["imageUrl", "title", "category"];
             const workToAdd = new AddWork(formAddWorkSubmit, fields);
             workToAdd.formData.append("image", document.querySelector("#imageUrl").files[0]);
             workToAdd.formData.append("title", document.querySelector("#title").value);
             workToAdd.formData.append("category", parseInt(document.querySelector("#category").value));
 
+
             fetch("http://localhost:5678/api/works",
                 workToAdd.postWorkAPI())
-                .then((response) => {
+                .then(async (response) => {
                     if (response.status === 201) {
                         displayAddWorkInGallery();
                     } else {
                         openModalAddWork();
                     };
-                });
+                })
         });
     })
-
 }
 
+function updateModalMenuContent() {
+    document.querySelector(".modal").style.display = "none";
+    deleteModal();
+    openModalMenu();
+}
 
 async function displayAddWorkInGallery() {
-    const newListWorks = await fetch("http://localhost:5678/api/works")
-        .then(newListWorks => newListWorks.json());
-    const lastWork = newListWorks.slice(-1)[0];
+    const newlistWorks = await fetch("http://localhost:5678/api/works")
+        .then(newlistWorks => newlistWorks.json());
+    const lastWork = newlistWorks.slice(-1)[0];
     let workClass = new Work(lastWork);
     const gallery = document.querySelector('.gallery');
 
@@ -288,40 +298,50 @@ async function displayAddWorkInGallery() {
     figure.appendChild(image);
     figure.appendChild(figcaption);
     gallery.appendChild(figure);
+
+    listWorks = newlistWorks;
+    updateModalMenuContent();
 }
 
+function changeDisplayModaltoFlex(target) {
+    target.style.display = "flex";
+}
 
-function openModal(element, list) {
-    const modalButton = document.querySelector(element);
+function openModalMenu() {
     const target = document.querySelector(".modal");
+    changeDisplayModaltoFlex(target);
+    generateDisplayModalMenuTitle("Galerie photo");
+    generateDisplayModalMenuContent();
+    //    ---- closeModal from button
+    target.addEventListener("click", closeModal(".close-modal"));
+    //    ---- closeModal from shadowed modal page
+    target.addEventListener("click", closeModal(".modal"));
+    //    ---- prevent propagation of the click to the internal modal
+    document.querySelector(".wrapper-modal").addEventListener("click", function (e) {
+        e.stopPropagation();
+    })
+    openModalAddWork();
+}
 
-    modalButton.addEventListener("click", function (e) {
-        target.style.display = "flex";
-        generateDisplayModalMenuTitle("Galerie photo");
-        generateDisplayModalMenuContent(list);
-        //    ---- closeModal from button
-        target.addEventListener("click", closeModal(".close-modal"));
-        //    ---- closeModal from shadowed modal page
-        target.addEventListener("click", closeModal(".modal"));
-        //    ---- prevent propagation of the click to the internal modal
-        document.querySelector(".wrapper-modal").addEventListener("click", function (e) {
-            e.stopPropagation();
-        })
-        openModalAddWork();
+function addListenerOpenModal(element) {
+    const buttonOpenModal = document.querySelector(element);
+
+    buttonOpenModal.addEventListener("click", function (e) {
+        openModalMenu();
     })
 }
 
 
 //    ---- Create JSON Datas from API ----
-let ListWorks = await fetch("http://localhost:5678/api/works")
-    .then(ListWorks => ListWorks.json());
+let listWorks = await fetch("http://localhost:5678/api/works")
+    .then(listWorks => listWorks.json());
 
 //    ---- Initial Display of .gallery: complete WorksList ----
-generateWorks(ListWorks);
+generateWorks(listWorks);
 
 //    ---- Change the Display of the selected filter button ----
 //    ---- Display of .gallery according to the filter selected ----
-addListernerFilters(ListWorks);
+addListenerFilters(listWorks);
 
 
 //    ---- Store the userId when Login complete ----
@@ -333,5 +353,5 @@ if (userId != "" && userId != null) {
     Auth.getLogout();
     Auth.homeDisplayTopHeader();
     Auth.homeDisplayDivModify();
-    openModal("#gallery-modal-button", ListWorks);
+    addListenerOpenModal("#gallery-modal-button", listWorks);
 };

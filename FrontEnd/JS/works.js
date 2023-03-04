@@ -18,7 +18,7 @@ export function generateWorks(List) {
 }
 
 //    ---- Function() : Filters LISTENERS ----
- export function addListernerFilters(ListWorks) {
+ export function addListenerFilters(listWorks) {
     const filterButtonList = document.querySelectorAll(".filters .btn");
 
     for (let i = 0; i < filterButtonList.length; i++) {
@@ -26,20 +26,20 @@ export function generateWorks(List) {
             //    ---- Select which filter button is active ----
             filterButtonList.forEach((button) => button.classList.remove("active"));
             event.target.classList.add("active");
-            const filteredListWorks = ListWorks.filter(function (ListWorks) {
+            const filteredlistWorks = listWorks.filter(function (listWorks) {
                 //    ---- Case first load of the page OR All Filter Selected ----
                 if (event.target.id === "") {
                     //    ---- Filter don't modify the List ----
                     return true;
                 } else {
                     //    ---- List is filtered according to the category ----
-                    return ListWorks.categoryId == event.target.id;
+                    return listWorks.categoryId == event.target.id;
                 }
             });
 
             //    ---- Class the function which create instances of Work
             //         to display them ----
-            generateWorks(filteredListWorks);
+            generateWorks(filteredlistWorks);
         })
     };
 }
