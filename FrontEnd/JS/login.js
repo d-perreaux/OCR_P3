@@ -3,7 +3,13 @@
  * Load the Auth Token in the Local Storage
  **/
 
-//    ---- Constructor Class Login ----
+/**
+ * Represents a login form and provides validation and submission functionnality
+ * 
+ * @class
+ * @param {HTMLElement} form - The login formButton element
+ * @param {string[]} fields - An Array of field names to validate
+ */
 class Login {
     constructor(form, fields) {
         this.form = form;
@@ -13,7 +19,11 @@ class Login {
         this.token = "";
     }
 
-    //    ---- Method() : Generate the Configuration Object of API call ----
+    /**
+     * 
+     * @returns Generates the configuration object for the login API req
+     * @returns {object}
+     */
     postAPI() {
         let configurationObject = {
             method: "POST",
@@ -23,53 +33,82 @@ class Login {
         return configurationObject;
     }
 
-    //    ---- Method() : collect the values of labels ----
-    //                reportValidity() of each input of labels
+    /**
+     * Checks the validity of the email
+     * if valid : complete the dataform
+     * if !valid : display the error message
+     * @method
+     * @returns {boolean} - 'true' if the email field.value is valid
+     */
+    checkValidityEmail() {
+        document.getElementById("email-error").innerText = "";
+        const inputEmail = document.querySelector(`#email`);
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (emailRegex.test(inputEmail.value)) {
+            this.data.email = inputEmail.value;
+        } else {
+            document.getElementById("email-error").innerText =
+                "Veuillez saisir email valide."
+        }
+        return emailRegex.test(inputEmail.value);
+    }
+
+    /**
+     * Checks the validity of the password
+     * if valid : complete the dataform
+     * if !valid : display the error message
+     * @method
+     * @returns {boolean} - 'true' if the passeword field.value is valid
+     */
+    checkValidityPassword() {
+        document.getElementById("password-error").innerText = "";
+        const inputPassword = document.querySelector(`#password`);
+        const passwordRegex = /^\S+$/;
+        if (passwordRegex.test(inputPassword.value)) {
+            this.data.password = inputPassword.value;
+        } else {
+            document.getElementById("password-error").innerText =
+                "Veuillez saisir un mot de passe valide."
+        }
+        return passwordRegex.test(inputPassword.value);
+
+    }
+    /**
+     * Adds eventListener on the form submit button
+     * Submits the login data to the API if all fields are valid
+     */
     validateOnSubmit() {
         this.form.addEventListener("click", (e) => {
             e.preventDefault();
-            let valid = true;
-            for (let field of this.fields) {
-                const input = document.querySelector(`#${field}`);
-                valid = valid && input.reportValidity();
-                if (!valid) {
-                    // Stop the checking at the first false test
-                    break;
-                } else {
-                    // If both the inputs are corrects, write this.data
-                    if (field === "email") {
-                        this.data.email = input.value;
-                    } else {
-                        this.data.password = input.value;
-                    }
-                }
-            }
-            // After the loop (so if all the inputs are correct) :
-            //    ---- postAPI(): Calls login API ----
-            try {
-                fetch("http://localhost:5678/api/users/login",
-                    this.postAPI())
-                    .then(response => {
-                        // Check the response.status
-                        if (response.status == 401) {
-                            const elementMessage = document.querySelector("#message");
-                            elementMessage.innerText = "Email et/ou Mot de passe non reconnus";
-                        } else if (response.status == 200) {
-                            // If response OK : save the Token and the Id in the Session Storage
-                            response.json().then(response => {
-                                const storageToken = response.token;
-                                const storageUserId = response.userId;
-                                window.sessionStorage.setItem("token", storageToken);
-                                window.sessionStorage.setItem("userId", storageUserId);
-                                window.location.href = "./index.html";
-                            })
-                        } else {
-                            window.location.href = "./login.html";
+            let validEmail = this.checkValidityEmail();
+            let validPassword = this.checkValidityPassword();
+            if (validEmail && validPassword) {
+                try {
+                    fetch("http://localhost:5678/api/users/login",
+                        this.postAPI())
+                        .then(response => {
+                            // Check the response.status
+                            if (response.status == 404) {
+                                const elementMessage = document.querySelector("#error-login");
+                                elementMessage.innerText = "Email et/ou Mot de passe non reconnus";
+                            } else if (response.status == 200) {
+                                // If response OK : save the Token and the Id in the Session Storage
+                                response.json().then(response => {
+                                    const storageToken = response.token;
+                                    const storageUserId = response.userId;
+                                    window.sessionStorage.setItem("token", storageToken);
+                                    window.sessionStorage.setItem("userId", storageUserId);
+                                    window.location.href = "./index.html";
+                                })
+                            } else {
+                                // window.location.href = "./login.html";
+                                console.log("pas gut")
+                            }
                         }
-                    }
-                    )
-            } catch (error) {
-                console.log(error);
+                        )
+                } catch (error) {
+                    console.log(error);
+                }
             }
         })
     }

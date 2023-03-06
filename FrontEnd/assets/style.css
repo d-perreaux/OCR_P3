@@ -214,6 +214,11 @@ margin: auto;
 	margin: auto;
 }
 
+.error-message {
+    color: red;
+    margin: 10px;
+}
+
 #contact > *, #login > * {
 	text-align: center;
 

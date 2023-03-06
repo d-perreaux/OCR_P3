@@ -2,7 +2,6 @@
     ---- Handle Display of the Welcome Page ----
 */
 
-
 import { generateWorks, Work } from "./JS/works.js";
 import { Auth } from "./JS/auth.js";
 import { addListenerFilters, displayGeneratedFilters } from "./JS/filters.js";
@@ -169,13 +168,15 @@ async function addListenerToOpenModalAddWork() {
             <div class="wrapper-form-img">
                 <label for="imageUrl" class="custom-file-upload">
                     <i class="fa-regular fa-image fa-4x"></i>
-                    <p id="button-ad-picture">+ Ajouter photo</p>
+                    <p id="button-add-picture">+ Ajouter photo</p>
                     <p>jpg, png : 4mo max</p>
                 </label>
                 <input type="file" id="imageUrl" name="imageUrl" accept=".jpg, .png" style="display: none">
             </div>
+            <div class="error-message" id="error-image"></div>
             <label for="title">Titre</label><br> 
             <input type="text" name="title" id="title" required>
+            <div class="error-message" id="error-title"></div>
             <label for="category">Catégorie</label>
             <select id="category" name="category">
             <option selected></option>
@@ -183,6 +184,7 @@ async function addListenerToOpenModalAddWork() {
             <option value="2">Appartements</option>
             <option value="3">Hotels & restaurants</option>
             </select>
+            <div class="error-message" id="error-category"></div>
         </form>
         `
         //Replace the label by the image selected
@@ -200,27 +202,68 @@ async function addListenerToOpenModalAddWork() {
         // - API call (Work/Post)
         formAddWorkSubmit.addEventListener("click", async function (e) {
             e.preventDefault();
+            const imageUrl = document.querySelector("#imageUrl").files[0]
+            const titleValue = document.querySelector("#title").value;
+            const categoryValue = parseInt(document.querySelector("#category").value)
+            checkValidityFormInputs(imageUrl, titleValue, categoryValue);
 
-            // Create instance of Work to add it through API call
-            const fields = ["imageUrl", "title", "category"];
-            const workToAdd = new AddWork(formAddWorkSubmit, fields);
-            workToAdd.formData.append("image", document.querySelector("#imageUrl").files[0]);
-            workToAdd.formData.append("title", document.querySelector("#title").value);
-            workToAdd.formData.append("category", parseInt(document.querySelector("#category").value));
+            if (checkValidityFormInputs(imageUrl, titleValue, categoryValue)) {
+                // Create instance of Work to add it through API call
+                const fields = ["imageUrl", "title", "category"];
+                const workToAdd = new AddWork(formAddWorkSubmit, fields);
+                workToAdd.formData.append("image", imageUrl);
+                workToAdd.formData.append("title", titleValue);
+                workToAdd.formData.append("category", categoryValue);
 
 
-            fetch("http://localhost:5678/api/works",
-                workToAdd.getPostWorkAPIConfigObject())
-                .then(async (response) => {
-                    if (response.status === 201) {
-                        displayWorkAdded();
-                    } else {
-                        addListenerToOpenModalAddWork();
-                    };
-                })
+                fetch("http://localhost:5678/api/works",
+                    workToAdd.getPostWorkAPIConfigObject())
+                    .then(async (response) => {
+                        if (response.status === 201) {
+                            displayWorkAdded();
+                        } else {
+                            addListenerToOpenModalAddWork();
+                        };
+                    })
+            }
         });
     })
 }
+
+
+/**
+ * Function which check the validity of the addWork form inputs
+ * Display an error message if input not valid
+ * @function
+ * @param {File} fileImage - the first item of the array<File>
+ * @param {string} title - the title of the new work
+ * @param {number} categoryId - the id of the category
+ * @returns {boolean}
+ */
+function checkValidityFormInputs(fileImage, title, categoryId) {
+    if (!fileImage) {
+        document.getElementById("error-image").innerText = "Veuillez ajouter une image.";
+        document.getElementById("error-title").innerText = "";
+        document.getElementById("error-category").innerText = "";
+        return false;
+
+    } else if (!title) {
+        document.getElementById("error-image").innerText = "";
+        document.getElementById("error-title").innerText = "Veuillez ajouter un titre.";
+        document.getElementById("error-category").innerText = "";
+        return false;
+
+    } else if (!categoryId) {
+        document.getElementById("error-image").innerText = "";
+        document.getElementById("error-title").innerText = "";
+        document.getElementById("error-category").innerText = "Veuillez sélectionner une catégorie.";
+        return false;
+
+    } else {
+        return true;
+    }
+}
+
 
 /**
  * Fetchs the list of works from the API and gets the last added.
