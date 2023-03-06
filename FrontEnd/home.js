@@ -425,11 +425,7 @@ addListenerFilters(listWorks);
 let userId = window.sessionStorage.getItem("userId");
 
 if (userId != "" && userId != null) {
-    Auth.addAuthCss();
-    Auth.generateAuthDisplay();
-    Auth.getLogout();
-    Auth.homeDisplayTopHeader();
-    Auth.homeDisplayDivModify();
+    new Auth(userId);
     addListenerOpenModal("#gallery-modal-button");
 };
 

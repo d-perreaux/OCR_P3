@@ -1,6 +1,21 @@
+/**
+ * Class representing authentification functionalities
+ * @class
+ * @constructor
+ * @param {number} userId - The user ID when login
+ */
 export class Auth {
+
+    constructor(userId) {
+        this.userId = userId;
+        this.addAuthCss();
+        this.generateAuthDisplay();
+        this.getLogout();
+        this.homeDisplayTopHeader();
+        this.homeDisplayDivModify();
+    }
     //    ---- Add auth.css to <head>
-    static addAuthCss() {
+    addAuthCss() {
         const linkCss = document.createElement("link")
         linkCss.setAttribute("rel", "stylesheet");
         linkCss.setAttribute("href", "./assets/auth.css");
@@ -8,7 +23,7 @@ export class Auth {
     }
 
     //    ---- Change display of last link of nav
-    static generateAuthDisplay() {
+    generateAuthDisplay() {
         const logout = document.getElementById("log");
         logout.innerText = "logout";
     }
@@ -16,7 +31,8 @@ export class Auth {
     //    ---- last link of nav : preventDefault() ----
     //    ---- last link of nav : addEventListener() ----
     //    ---- clear sessionStorage ----
-    static getLogout() {
+    //    ---- redirects to index.html without auth modifications
+    getLogout() {
         const logout = document.getElementById("log");
         logout.addEventListener("click", (e) => {
             e.preventDefault();
@@ -27,7 +43,7 @@ export class Auth {
     }
 
     //    ---- Add top-header ----
-    static homeDisplayTopHeader() {
+    homeDisplayTopHeader() {
         const topHeaderElement = document.createElement("div");
         topHeaderElement.id = "top-header";
         const headerElement = document.querySelector("body header");
@@ -40,7 +56,7 @@ export class Auth {
     }
 
     //    ---- Add icon div + modify div
-    static homeDisplayDivModify() {
+    homeDisplayDivModify() {
         let wrapperModifyElements = `
         <div class="wrapper-auth-modify">
             <div><i class="fa-regular fa-pen-to-square fa-lg"></i></div>
