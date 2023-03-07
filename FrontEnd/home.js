@@ -13,6 +13,7 @@ import { addListenerFilters, displayGeneratedFilters } from "./JS/filters.js";
  * @param {Array} fields - Array of field elements 
  * @param {formData} formData - Prepare an empty formData for the API call
  */
+
 class AddWork {
     constructor(form, fields) {
         this.form = form;
@@ -53,7 +54,7 @@ function addListenersToDeleteWork() {
         trashe.addEventListener("click", () => {
             // html icon id = "work-number-${item.id}"
             // split the string to just keep id as an integer
-            let workIdString = trashe.getAttribute('id');
+            let workIdString = trashe.getAttribute("id");
             let workIdStringSplit = workIdString.split("work-number-");
             let workId = parseInt(workIdStringSplit[1]);
             deleteWorkAPI(workId);
@@ -100,7 +101,7 @@ function getDeleteAPIConfigObject() {
         headers: {
             "Authorization": `Bearer ${token}`,
             "Content-Type": "application/json"
-        },
+        }
     };
     return configurationObject;
 }
@@ -113,11 +114,11 @@ function getDeleteAPIConfigObject() {
  *   Replaces the previous display of the label with the newly selected image
  */
 function displayFormImageSelected() {
-    const input = document.getElementById('imageUrl');
-    const label = document.querySelector('.custom-file-upload');
+    const input = document.getElementById("imageUrl");
+    const label = document.querySelector(".custom-file-upload");
 
     // add EventListener "when the file is selected"
-    input.addEventListener('change', function () {
+    input.addEventListener("change", function () {
         // check if a file is selected
         if (input.files && input.files[0]) {
             // create Object FileReader()
@@ -141,6 +142,7 @@ function displayFormImageSelected() {
     });
 }
 
+
 /**
  * Adds a click event listener which opens the modal for adding a new work
  * deletes the previous modal content and generates new content for the modal
@@ -157,6 +159,11 @@ async function addListenerToOpenModalAddWork() {
         // Delete the prevous modal content
         document.querySelector(".modal-title h3").innerHTML = "";
         document.querySelector(".modal-footer").innerHTML = "";
+        document.querySelector("#return-menu-modal").style.display = "block";
+        document.querySelector("#return-menu-modal").addEventListener("click", () => {
+            deleteModalContent();
+            openModalMenu();
+        })
         generateDisplayModalMenuTitle("Ajout photo");
         // generate the content of <.modal-content>:
         // - form to add a word to the datas
@@ -218,7 +225,7 @@ async function addListenerToOpenModalAddWork() {
 
                 fetch("http://localhost:5678/api/works",
                     workToAdd.getPostWorkAPIConfigObject())
-                    .then(async (response) => {
+                    .then(response => {
                         if (response.status === 201) {
                             displayWorkAdded();
                         } else {
@@ -277,11 +284,11 @@ async function displayWorkAdded() {
         .then(newlistWorks => newlistWorks.json());
     const lastWork = newlistWorks.slice(-1)[0];
     let workClass = new Work(lastWork);
-    const gallery = document.querySelector('.gallery');
+    const gallery = document.querySelector(".gallery");
 
-    const figure = document.createElement('figure');
-    const image = document.createElement('img');
-    const figcaption = document.createElement('figcaption');
+    const figure = document.createElement("figure");
+    const image = document.createElement("img");
+    const figcaption = document.createElement("figcaption");
 
     image.src = workClass.imageUrl;
     image.alt = workClass.title;
@@ -416,12 +423,13 @@ function changeDisplayModaltoFlex(target) {
 function openModalMenu() {
     const target = document.querySelector(".modal");
     changeDisplayModaltoFlex(target);
+    document.getElementById("return-menu-modal").style.display = "none";
     generateDisplayModalMenuTitle("Galerie photo");
     generateDisplayModalMenuContent();
     //    ---- addListenerToCloseModal from button
-    target.addEventListener("click", addListenerToCloseModal(".close-modal"));
+    addListenerToCloseModal(".close-modal");
     //    ---- addListenerToCloseModal from shadowed modal page
-    target.addEventListener("click", addListenerToCloseModal(".modal"));
+    addListenerToCloseModal(".modal");
     //    ---- prevent propagation of the click to the internal modal
     document.querySelector(".wrapper-modal").addEventListener("click", function (e) {
         e.stopPropagation();

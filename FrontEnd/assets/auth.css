@@ -97,6 +97,17 @@ body {
     gap: 18px;
 }
 
+.wrapper-top-icons {
+    display: flex;
+    flex-direction: row-reverse;
+    width: 100%;
+    justify-content: space-between;
+}
+
+#return-menu-modal{
+    cursor: pointer;
+}
+
 .close-modal {
     align-self: flex-end;
     cursor: pointer;
@@ -106,6 +117,7 @@ h3 {
     font-size: 26px;
     text-align: center;
 }
+
 
 .wrapper-modal-content {
     display: grid;
