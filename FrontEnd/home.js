@@ -1,7 +1,3 @@
-/* 
-    ---- Handle Display of the Welcome Page ----
-*/
-
 import { generateWorks, Work } from "./JS/works.js";
 import { Auth } from "./JS/auth.js";
 import { addListenerFilters, displayGeneratedFilters } from "./JS/filters.js";
@@ -13,21 +9,19 @@ import { addListenerFilters, displayGeneratedFilters } from "./JS/filters.js";
  * @param {Array} fields - Array of field elements 
  * @param {formData} formData - Prepare an empty formData for the API call
  */
-
 class AddWork {
     constructor(form, fields) {
         this.form = form;
         this.fields = fields;
         this.formData = new FormData();
     }
-
     /**
      * @method
      * @returns {Object} - the configuration object used for adding a work
      */
     getPostWorkAPIConfigObject() {
         let token = window.sessionStorage.getItem("token")
-        let configurationObject = {
+        return {
             method: "POST",
             headers: {
                 "Authorization": `Bearer ${token}`,
@@ -35,7 +29,6 @@ class AddWork {
             },
             body: this.formData
         };
-        return configurationObject;
     }
 }
 
@@ -43,18 +36,14 @@ class AddWork {
  * add eventListeners on all trash icons
  * event : get the id associated with the icon
  * then : deletes a work from the API and removes it from the DOM
- * @async
- * @function deleteWorkAPI
- * @param {number} id - the ID of the work to be deleted
  */
-
 function addListenersToDeleteWork() {
     const trashesList = document.querySelectorAll(".fa-trash-can");
-    trashesList.forEach(trashe => {
-        trashe.addEventListener("click", () => {
+    trashesList.forEach(trash => {
+        trash.addEventListener("click", () => {
             // html icon id = "work-number-${item.id}"
             // split the string to just keep id as an integer
-            let workIdString = trashe.getAttribute("id");
+            let workIdString = trash.getAttribute("id");
             let workIdStringSplit = workIdString.split("work-number-");
             let workId = parseInt(workIdStringSplit[1]);
             deleteWorkAPI(workId);
@@ -63,7 +52,7 @@ function addListenersToDeleteWork() {
 }
 
 /**
- * Deletes a work with the given ID from the database using the delete method
+ * Deletes a work with the given ID
  * if database answer is ok : 
  * Updates the UI by removing the deleted work from both the gallery and modal
  * @async
@@ -80,11 +69,11 @@ async function deleteWorkAPI(id) {
                 const gallery = elementToDeleteGallery.parentNode;
                 gallery.remove();
 
-                const elementTodeleteModalContent = document.getElementById(`work-number-${id}`);
-                const parentElementTodeleteModalContent = elementTodeleteModalContent.closest(".div-wrapper");
-                parentElementTodeleteModalContent.remove();
+                const elementTodelete = document.getElementById(`work-number-${id}`);
+                const parentElement = elementTodelete.closest(".div-wrapper");
+                parentElement.remove();
 
-                listWorks = listWorks.filter(work => work.id !== id)
+                arrayWorks = arrayWorks.filter(work => work.id !== id);
             }
         })
 }
@@ -96,32 +85,28 @@ async function deleteWorkAPI(id) {
  */
 function getDeleteAPIConfigObject() {
     let token = window.sessionStorage.getItem("token")
-    let configurationObject = {
+    return {
         method: "DELETE",
         headers: {
             "Authorization": `Bearer ${token}`,
             "Content-Type": "application/json"
         }
     };
-    return configurationObject;
 }
 
 /**
  * Displays the image selected by the user in the form :
  * - Adds an event listener to the input element (listens for the change)
  * - If a file is selected, creates a FileReader object to read the image file
- *   then displays it in the form.
  *   Replaces the previous display of the label with the newly selected image
  */
-function displayFormImageSelected() {
+function displayInputImageIfFileSelected() {
     const input = document.getElementById("imageUrl");
     const label = document.querySelector(".custom-file-upload");
 
-    // add EventListener "when the file is selected"
     input.addEventListener("change", function () {
-        // check if a file is selected
+
         if (input.files && input.files[0]) {
-            // create Object FileReader()
             const reader = new FileReader();
 
             // add listener to detect the end of the display of the image
@@ -130,47 +115,26 @@ function displayFormImageSelected() {
                 const img = document.createElement('img');
                 img.src = e.target.result;
                 img.style.maxWidth = '50%';
-
-                // Replace the display of the Label
                 label.innerHTML = '';
                 label.appendChild(img);
-            };
+            }
 
             // Read the picture selected
             reader.readAsDataURL(input.files[0]);
         }
-    });
+    })
 }
 
-
 /**
- * Adds a click event listener which opens the modal for adding a new work
- * deletes the previous modal content and generates new content for the modal
  * Adds a form with :
  *  - fields to add a new work to the database
  *  - button to submit the form
- * Adds an event listener to the submit button that collects the form data
- *  then makes an API req to add the new work
  */
-async function addListenerToOpenModalAddWork() {
-    //add listener on the button which open "ajouter une photo" of the previous <.modal-footer> content
-    const buttonOpenModalAddWork = document.querySelector("#open-modal-add-work");
-    buttonOpenModalAddWork.addEventListener("click", async (e) => {
-        // Delete the prevous modal content
-        document.querySelector(".modal-title h3").innerHTML = "";
-        document.querySelector(".modal-footer").innerHTML = "";
-        document.querySelector("#return-menu-modal").style.display = "block";
-        document.querySelector("#return-menu-modal").addEventListener("click", () => {
-            deleteModalContent();
-            openModalMenu();
-        })
-        generateDisplayModalMenuTitle("Ajout photo");
-        // generate the content of <.modal-content>:
-        // - form to add a word to the datas
-        const modalContent = document.querySelector(".modal-content");
-        modalContent.innerHTML = `<div class="wrapper-modal-addwork-content"></div>`;
-        const wrapperModalAddWorkContent = document.querySelector(".wrapper-modal-addwork-content");
-        wrapperModalAddWorkContent.innerHTML += `
+function displayFormModalAddWork() {
+    const modalContent = document.querySelector(".modal-content");
+    modalContent.innerHTML = `<div class="wrapper-modal-addwork-content"></div>`;
+    const wrapperModalAddWorkContent = document.querySelector(".wrapper-modal-addwork-content");
+    wrapperModalAddWorkContent.innerHTML += `
         <form id="add-form">
             <div class="wrapper-form-img">
                 <label for="imageUrl" class="custom-file-upload">
@@ -178,51 +142,59 @@ async function addListenerToOpenModalAddWork() {
                     <p id="button-add-picture">+ Ajouter photo</p>
                     <p>jpg, png : 4mo max</p>
                 </label>
-                <input type="file" id="imageUrl" name="imageUrl" accept=".jpg, .png" style="display: none">
+                <input type="file" id="imageUrl" name="imageUrl" accept=".jpg, .png" style="display: none" required>
             </div>
             <div class="error-message" id="error-image"></div>
             <label for="title">Titre</label><br> 
             <input type="text" name="title" id="title" required>
-            <div class="error-message" id="error-title"></div>
             <label for="category">Catégorie</label>
-            <select id="category" name="category">
+            <select id="category" name="category" required>
             <option selected></option>
             <option value="1">Objets</option>
             <option value="2">Appartements</option>
             <option value="3">Hotels & restaurants</option>
             </select>
-            <div class="error-message" id="error-category"></div>
         </form>
-        `
-        //Replace the label by the image selected
-        displayFormImageSelected()
+        `;
+}
 
-        // generate the content of <.modal-footer>:
-        // - button <#open-modal-add-work> linked to the previous form
-        document.querySelector(".modal-footer").innerHTML = `
-        <div class="bottom-border"></div>
-		<button id="open-modal-add-work" type="submit" form:"add-form">Valider</button>`
-        const formAddWorkSubmit = document.querySelector("#open-modal-add-work")
-        // add EventListener() to this button :
-        // - preventDefault()
-        // - collect the data of the form
-        // - API call (Work/Post)
+/*
+ * Checks the validity of the siez of the input Image
+ * Display an error message if not valid
+ * @function
+ * @param {File} fileImage - the first item of the array<File>
+ * @returns {boolean}
+ */
+function checkValidityImage(fileImage) {
+    const maxFileSize = 4 * 1024 * 1024; // 4Mb in bytes
+    if (fileImage.size > maxFileSize) {
+        document.getElementById("error-image").innerText = "Veuillez ajouter une image de 4Mo maximum.";
+        return false;
+    }
+    return true;
+}
+/**
+ * - PreventDefault() of the form add submit
+ * - Collects the data of the form
+ * - API req (Work/Post)
+ */
+function postWork() {
+    const formAddWorkSubmit = document.querySelector("#button-add-work");
+    const imageUrl = document.querySelector("#imageUrl").files[0];
+    const titleValue = document.querySelector("#title").value;
+    const categoryValue = parseInt(document.querySelector("#category").value);
+
+    if (imageUrl && titleValue && categoryValue) {
+        formAddWorkSubmit.style.backgroundColor = "#1D6154";
         formAddWorkSubmit.addEventListener("click", async function (e) {
             e.preventDefault();
-            const imageUrl = document.querySelector("#imageUrl").files[0]
-            const titleValue = document.querySelector("#title").value;
-            const categoryValue = parseInt(document.querySelector("#category").value)
-            checkValidityFormInputs(imageUrl, titleValue, categoryValue);
-
-            if (checkValidityFormInputs(imageUrl, titleValue, categoryValue)) {
+            if (checkValidityImage(imageUrl)) {
                 // Create instance of Work to add it through API call
                 const fields = ["imageUrl", "title", "category"];
                 const workToAdd = new AddWork(formAddWorkSubmit, fields);
                 workToAdd.formData.append("image", imageUrl);
                 workToAdd.formData.append("title", titleValue);
                 workToAdd.formData.append("category", categoryValue);
-
-
                 fetch("http://localhost:5678/api/works",
                     workToAdd.getPostWorkAPIConfigObject())
                     .then(response => {
@@ -230,47 +202,44 @@ async function addListenerToOpenModalAddWork() {
                             displayWorkAdded();
                         } else {
                             addListenerToOpenModalAddWork();
-                        };
+                        }
                     })
             }
-        });
-    })
-}
-
-
-/**
- * Function which check the validity of the addWork form inputs
- * Display an error message if input not valid
- * @function
- * @param {File} fileImage - the first item of the array<File>
- * @param {string} title - the title of the new work
- * @param {number} categoryId - the id of the category
- * @returns {boolean}
- */
-function checkValidityFormInputs(fileImage, title, categoryId) {
-    if (!fileImage) {
-        document.getElementById("error-image").innerText = "Veuillez ajouter une image.";
-        document.getElementById("error-title").innerText = "";
-        document.getElementById("error-category").innerText = "";
-        return false;
-
-    } else if (!title) {
-        document.getElementById("error-image").innerText = "";
-        document.getElementById("error-title").innerText = "Veuillez ajouter un titre.";
-        document.getElementById("error-category").innerText = "";
-        return false;
-
-    } else if (!categoryId) {
-        document.getElementById("error-image").innerText = "";
-        document.getElementById("error-title").innerText = "";
-        document.getElementById("error-category").innerText = "Veuillez sélectionner une catégorie.";
-        return false;
-
-    } else {
-        return true;
+        })
     }
 }
 
+/**
+ * Adds a click event listener which opens the modal for adding a new work
+ * Deletes the previous modal content and generates new content for the modal
+ * Adds an event listener to the submit button that collects the form data
+ * then makes an API req to add the new work
+ */
+function addListenerToOpenModalAddWork() {
+    //add listener on the button which open "ajouter une photo" of the previous <.modal-footer> content
+    const buttonOpenModalAddWork = document.querySelector("#open-modal-add-work");
+    buttonOpenModalAddWork.addEventListener("click", () => {
+        // Change the display of the arrow icon
+        document.querySelector("#return-menu-modal").style.display = "block";
+        // Delete the previous modal content
+        document.querySelector("#return-menu-modal").addEventListener("click", () => {
+            deleteModalContent();
+            openModalMenu();
+        })
+        displayModalMenuTitle("Ajout photo");
+        displayFormModalAddWork();
+        //Replace the image label by the image if file is selected
+        displayInputImageIfFileSelected();
+
+        // generate the content of <.modal-footer>:
+        // - button <#open-modal-add-work> linked to the previous form
+        document.querySelector(".modal-footer").innerHTML = `
+        <div class="bottom-border"></div>
+		<button id="button-add-work" type="submit" form="add-form">Valider</button>`;
+
+        document.getElementById("add-form").addEventListener("change", postWork);
+    })
+}
 
 /**
  * Fetchs the list of works from the API and gets the last added.
@@ -280,9 +249,9 @@ function checkValidityFormInputs(fileImage, title, categoryId) {
  * @async
  */
 async function displayWorkAdded() {
-    const newlistWorks = await fetch("http://localhost:5678/api/works")
-        .then(newlistWorks => newlistWorks.json());
-    const lastWork = newlistWorks.slice(-1)[0];
+    const newArrayWorks = await fetch("http://localhost:5678/api/works")
+        .then(newarrayWorks => newarrayWorks.json());
+    const lastWork = newArrayWorks.slice(-1)[0];
     let workClass = new Work(lastWork);
     const gallery = document.querySelector(".gallery");
 
@@ -299,9 +268,10 @@ async function displayWorkAdded() {
     figure.appendChild(figcaption);
     gallery.appendChild(figure);
 
-    listWorks = newlistWorks;
+    arrayWorks = newArrayWorks;
     updateModalMenuContent();
 }
+
 
 function updateModalMenuContent() {
     document.querySelector(".modal").style.display = "none";
@@ -336,16 +306,56 @@ function addListenerToCloseModal(element) {
     const modalButton = document.querySelector(element);
     const target = document.querySelector(".modal");
     modalButton.addEventListener("click", function (e) {
-        //close the modal
         target.style.display = "none";
         deleteModalContent();
     })
 }
 
 
-function generateDisplayModalMenuTitle(title) {
-    const modalTitle = document.querySelector(".modal-title h3");
-    modalTitle.innerText = title;
+function displayModalMenuTitle(title) {
+    document.querySelector(".modal-title h3").innerText = title;
+}
+
+/**
+ * Displays a Work instance in the modal:
+ * - creates HTML elements
+ * - Appends them to the given wrapper
+ * @param {Work} work - A Work instance to be displayed
+ * @param {HTMLElement} wrapperContent The wrapper element to wich
+ *                      the work elements will be appended
+ */
+function displayWorkModal(work, wrapperContent) {
+    const divWrapper = document.createElement("div");
+    const divImgWrapper = document.createElement("div");
+    const img = document.createElement("img");
+    const divIconWrapper = document.createElement("div");
+    const divMovePosition = document.createElement("div");
+    const iconMovePosition = document.createElement("i");
+    const divIconContainer = document.createElement("div");
+    const iconTrashCan = document.createElement("i");
+    const spanEdit = document.createElement("span");
+
+    divWrapper.appendChild(divImgWrapper);
+    divImgWrapper.appendChild(img);
+    divImgWrapper.appendChild(divIconWrapper);
+    divIconWrapper.appendChild(divMovePosition);
+    divMovePosition.appendChild(iconMovePosition);
+    divIconWrapper.appendChild(divIconContainer);
+    divIconContainer.appendChild(iconTrashCan);
+    divWrapper.appendChild(spanEdit);
+    wrapperContent.appendChild(divWrapper);
+
+    divWrapper.classList.add("div-wrapper");
+    divImgWrapper.classList.add("wrapper-img");
+    divIconWrapper.classList.add("icon-wrapper");
+    divMovePosition.classList.add("icon-container", "move-position");
+    iconMovePosition.classList.add("fa-solid", "fa-up-down-left-right", "fa-sm");
+    divIconContainer.classList.add("icon-container");
+    iconTrashCan.classList.add("fa-solid", "fa-trash-can", "fa-sm");
+    iconTrashCan.setAttribute("id", `work-number-${work.id}`);
+    img.setAttribute("src", work.imageUrl);
+    img.setAttribute("alt", work.title);
+    spanEdit.textContent = "éditer";
 }
 
 /**
@@ -366,52 +376,17 @@ function generateDisplayModalMenuContent() {
     //generate the content of <.wrapper-modal-content>: 
     // - picture of the works
     // - icons on each picture
-    for (let item of listWorks) {
-        const divWrapper = document.createElement("div");
-        const divImgWrapper = document.createElement("div");
-        const img = document.createElement("img");
-        const divIconWrapper = document.createElement("div");
-        const divMovePosition = document.createElement("div");
-        const iconMovePosition = document.createElement("i");
-        const divIconContainer = document.createElement("div");
-        const iconTrashCan = document.createElement("i");
-        const spanEdit = document.createElement("span");
-
-        divWrapper.appendChild(divImgWrapper);
-        divImgWrapper.appendChild(img);
-        divImgWrapper.appendChild(divIconWrapper);
-        divIconWrapper.appendChild(divMovePosition);
-        divMovePosition.appendChild(iconMovePosition);
-        divIconWrapper.appendChild(divIconContainer);
-        divIconContainer.appendChild(iconTrashCan);
-        divWrapper.appendChild(spanEdit);
-        wrapperModalMenuContent.appendChild(divWrapper);
-
-        divWrapper.classList.add("div-wrapper");
-        divImgWrapper.classList.add("wrapper-img");
-        divIconWrapper.classList.add("icon-wrapper");
-        divMovePosition.classList.add("icon-container", "move-position");
-        iconMovePosition.classList.add("fa-solid", "fa-up-down-left-right", "fa-sm");
-        divIconContainer.classList.add("icon-container");
-        iconTrashCan.classList.add("fa-solid", "fa-trash-can", "fa-sm");
-        iconTrashCan.setAttribute("id", `work-number-${item.id}`);
-        img.setAttribute("src", item.imageUrl);
-        img.setAttribute("alt", item.title);
-        spanEdit.textContent = "éditer";
+    for (let item of arrayWorks) {
+        displayWorkModal(item, wrapperModalMenuContent);
     }
 
-    //generate the content of <.modal-footer>:
     document.querySelector(".modal-footer").innerHTML += `
         <div class="bottom-border"></div>
 		<button id="open-modal-add-work">Ajouter une photo</button>
         <div id="delete-gallery">Supprimer la galerie</div>
-        `
-    // add listeners on trash icons to delete a work thanx to his ID
-    addListenersToDeleteWork();
-}
+        `;
 
-function changeDisplayModaltoFlex(target) {
-    target.style.display = "flex";
+    addListenersToDeleteWork();
 }
 
 /**
@@ -421,10 +396,9 @@ function changeDisplayModaltoFlex(target) {
  *  - event listener to change the content of the modal to add a work
  */
 function openModalMenu() {
-    const target = document.querySelector(".modal");
-    changeDisplayModaltoFlex(target);
+    document.querySelector(".modal").style.display = "flex";
     document.getElementById("return-menu-modal").style.display = "none";
-    generateDisplayModalMenuTitle("Galerie photo");
+    displayModalMenuTitle("Galerie photo");
     generateDisplayModalMenuContent();
     //    ---- addListenerToCloseModal from button
     addListenerToCloseModal(".close-modal");
@@ -437,46 +411,31 @@ function openModalMenu() {
     addListenerToOpenModalAddWork();
 }
 
+
 function addListenerOpenModal(element) {
     const buttonOpenModal = document.querySelector(element);
 
-    buttonOpenModal.addEventListener("click", function (e) {
+    buttonOpenModal.addEventListener("click", function () {
         openModalMenu();
     })
 }
 
 
-/**
- * Create JSON Datas from API
- */
-let listWorks = await fetch("http://localhost:5678/api/works")
-    .then(listWorks => listWorks.json());
+let arrayWorks = await fetch("http://localhost:5678/api/works")
+    .then(arrayWorks => arrayWorks.json());
 
-/**
- * Initial Display of .gallery: complete WorksList
- */
-generateWorks(listWorks);
+generateWorks(arrayWorks);
 
-/**
- * FILTERS
- */
+displayGeneratedFilters(arrayWorks);
 
-displayGeneratedFilters(listWorks);
-
-//    ---- Change the Display of the selected filter button ----
-//    ---- Display of .gallery according to the filter selected ----
-addListenerFilters(listWorks);
-
+addListenerFilters(arrayWorks);
 
 /**
  * AUTH
  */
-
-//    ---- Store the userId when Login complete ----
 let userId = window.sessionStorage.getItem("userId");
 
 if (userId != "" && userId != null) {
     new Auth(userId);
     addListenerOpenModal("#gallery-modal-button");
 };
-

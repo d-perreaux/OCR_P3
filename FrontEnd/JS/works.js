@@ -1,18 +1,26 @@
+/**
+ * Represents a Work with the properties provided by the API req
+ */
 export class Work {
     constructor(jsonWork) {
         jsonWork && Object.assign(this, jsonWork);
     }
 }
 
-//    ---- Function() : create instances of class Work to Display them on the Browser ----
-export function generateWorks(List) {
+/**
+ * Generates HTML from Work properties 
+ * Insert them into ".gallery" element
+ * @param {object[]} array 
+ */
+export function generateWorks(array) {
     document.querySelector(".gallery").innerHTML = "";
-    for (let work of List) {
+    for (let work of array) {
         let workClass = new Work(work);
         document.querySelector(".gallery").innerHTML += `
     <figure>
-        <image src="${workClass.imageUrl}" alt="${workClass.title}"  id="work-${workClass.id}"></image>
+        <image src="${workClass.imageUrl}" alt="${workClass.title}" id="work-${workClass.id}"/>
         <figcaption>${workClass.title}</figcaption>
-    </figure>`
-    };
+    </figure>
+    `;
+    }
 }

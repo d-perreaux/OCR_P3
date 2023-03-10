@@ -11,26 +11,24 @@
  * @param {string[]} fields - An Array of field names to validate
  */
 class Login {
-    constructor(form, fields) {
+    constructor(form) {
         this.form = form;
-        this.fields = fields;
         this.validateOnSubmit();
         this.data = { email: "", password: "" };
         this.token = "";
     }
 
     /**
-     * 
+     * Set post configuration
      * @returns Generates the configuration object for the login API req
      * @returns {object}
      */
     postAPI() {
-        let configurationObject = {
+        return {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(this.data)
-        };
-        return configurationObject;
+        }
     }
 
     /**
@@ -48,7 +46,7 @@ class Login {
             this.data.email = inputEmail.value;
         } else {
             document.getElementById("email-error").innerText =
-                "Veuillez saisir email valide."
+                "Veuillez saisir email valide.";
         }
         return emailRegex.test(inputEmail.value);
     }
@@ -68,7 +66,7 @@ class Login {
             this.data.password = inputPassword.value;
         } else {
             document.getElementById("password-error").innerText =
-                "Veuillez saisir un mot de passe valide."
+                "Veuillez saisir un mot de passe valide.";
         }
         return passwordRegex.test(inputPassword.value);
 
@@ -83,38 +81,32 @@ class Login {
             let validEmail = this.checkValidityEmail();
             let validPassword = this.checkValidityPassword();
             if (validEmail && validPassword) {
-                try {
-                    fetch("http://localhost:5678/api/users/login",
-                        this.postAPI())
-                        .then(response => {
-                            // Check the response.status
-                            if (response.status == 404) {
-                                const elementMessage = document.querySelector("#error-login");
-                                elementMessage.innerText = "Email et/ou Mot de passe non reconnus";
-                            } else if (response.status == 200) {
-                                // If response OK : save the Token and the Id in the Session Storage
-                                response.json().then(response => {
-                                    const storageToken = response.token;
-                                    const storageUserId = response.userId;
-                                    window.sessionStorage.setItem("token", storageToken);
-                                    window.sessionStorage.setItem("userId", storageUserId);
-                                    window.location.href = "./index.html";
-                                })
-                            } else {
-                                // window.location.href = "./login.html";
-                                console.log("pas gut")
-                            }
+                fetch("http://localhost:5678/api/users/login",
+                    this.postAPI())
+                    .then(response => {
+                        if (response.status === 404) {
+                            const elementMessage = document.querySelector("#error-login");
+                            elementMessage.innerText = "Email et/ou Mot de passe non reconnus.";
+                        } 
+                        if (response.status === 401) {
+                            const elementMessage = document.querySelector("#error-login");
+                            elementMessage.innerText = "Erreur dans l’identifiant ou le mot de passe.";
                         }
-                        )
-                } catch (error) {
-                    console.log(error);
-                }
+                        if (response.status === 200) {
+                            response.json().then(response => {
+                                const storageToken = response.token;
+                                const storageUserId = response.userId;
+                                window.sessionStorage.setItem("token", storageToken);
+                                window.sessionStorage.setItem("userId", storageUserId);
+                                window.location.href = "./index.html";
+                            })
+                        }
+                    }
+                    )
             }
         })
     }
 }
 
-
 const formSubmit = document.querySelector("#login-submit");
-const fields = ["email", "password"];
-new Login(formSubmit, fields);
+new Login(formSubmit);

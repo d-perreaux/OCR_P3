@@ -14,24 +14,32 @@ export class Auth {
         this.homeDisplayTopHeader();
         this.homeDisplayDivModify();
     }
-    //    ---- Add auth.css to <head>
+
+    /**
+     * Adds auth.css to <head>
+     */
     addAuthCss() {
-        const linkCss = document.createElement("link")
+        const linkCss = document.createElement("link");
         linkCss.setAttribute("rel", "stylesheet");
         linkCss.setAttribute("href", "./assets/auth.css");
         document.querySelector("head").appendChild(linkCss);
     }
 
-    //    ---- Change display of last link of nav
+    /**
+     * Changes display of last link of nav
+     */
     generateAuthDisplay() {
         const logout = document.getElementById("log");
         logout.innerText = "logout";
     }
 
-    //    ---- last link of nav : preventDefault() ----
-    //    ---- last link of nav : addEventListener() ----
-    //    ---- clear sessionStorage ----
-    //    ---- redirects to index.html without auth modifications
+    /**
+     * last link of nav :
+     * -preventDefault()
+     * -addEventListener() :
+     *   -clear sessionStorage
+     *   -redirects to index.html without auth modifications
+     */
     getLogout() {
         const logout = document.getElementById("log");
         logout.addEventListener("click", (e) => {
@@ -42,7 +50,9 @@ export class Auth {
         })
     }
 
-    //    ---- Add top-header ----
+    /**
+     * Adds top-header
+     */
     homeDisplayTopHeader() {
         const topHeaderElement = document.createElement("div");
         topHeaderElement.id = "top-header";
@@ -51,16 +61,18 @@ export class Auth {
         document.querySelector("#top-header").innerHTML += `
     <div><i class="fa-regular fa-pen-to-square fa-lg"></i></div>
     <div>Mode édition</div>
-    <div type="button">publier les changements</div>
+    <div class="button">publier les changements</div>
     `;
     }
 
-    //    ---- Add icon div + modify div
+    /**
+     * Adds icon div + modify div
+     */
     homeDisplayDivModify() {
         let wrapperModifyElements = `
         <div class="wrapper-auth-modify">
             <div><i class="fa-regular fa-pen-to-square fa-lg"></i></div>
-            <div type="button">modifier</div>
+            <div class="button">modifier</div>
         </div>
         `;
         document.querySelector("#introduction").insertAdjacentHTML('afterend', wrapperModifyElements);
@@ -69,7 +81,7 @@ export class Auth {
         wrapperModifyElements = `
         <div class="wrapper-auth-modify">
             <div><i class="fa-regular fa-pen-to-square fa-lg"></i></div>
-            <div type="button" id="gallery-modal-button">modifier</div>
+            <div class="button" id="gallery-modal-button">modifier</div>
         </div>
         `;
         document.querySelector("#portfolio div h2").insertAdjacentHTML('afterend', wrapperModifyElements);

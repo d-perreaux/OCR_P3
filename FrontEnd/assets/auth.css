@@ -262,6 +262,10 @@ h3 {
     cursor: pointer;
 }
 
+.wrapper-modal #button-add-work{
+    background-color: #A7A7A7;
+}
+
 .error-message {
     color: red;
     margin: 12px;
